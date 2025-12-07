@@ -3,6 +3,7 @@
 #include "GLFW/glfw3.h"
 #include "shader.h"
 #include "config.h"
+#include "simulation.h"
 
 #define BACKGROUND_COLOR 0.0f, 0.0f, 0.0f, 0.0f
 
@@ -64,6 +65,10 @@ int main(int argc, char* argv[]) {
 	int frames_passed = 0;
 	double total_frame_time = 0;
 
+	Simulation sim;
+	Circle* circle = new Circle(0.5, Vector2(0,0));
+	sim.addShape(circle);
+
 	while (!glfwWindowShouldClose(window)) {
 
 		double last_frame_time = glfwGetTime();
@@ -73,7 +78,7 @@ int main(int argc, char* argv[]) {
 
 		shader.use();
 
-
+		sim.step();
 
 		glfwSwapBuffers(window);
 
