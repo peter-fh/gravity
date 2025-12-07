@@ -38,6 +38,10 @@ void Simulation::addCircle(Circle circle) {
 	m_shapes.push_back(circle);
 }
 
+float distance(Circle a, Circle b) {
+	return std::sqrt(pow(a.pos.x - b.pos.x, 2) + pow(a.pos.y - b.pos.y, 2));
+}
+
 void Simulation::step() {
 	double currentTime = glfwGetTime();
 	double timeDelta = currentTime - lastFrameTime;
@@ -73,7 +77,19 @@ void Simulation::step() {
 				shape.pos.y = -1+shape.r;
 			}
 		}
-
+		for (Circle& other_shape : m_shapes)  {
+			if (&shape != &other_shape) {
+				float dist = distance(shape, other_shape);
+				if (dist < shape.r + other_shape.r) {
+					shape.pos.x -= dx;
+					shape.pos.y -= dy;
+					shape.velocity.x *= -1;
+					shape.velocity.y *= -1;
+					other_shape.velocity.x *= -1;
+					other_shape.velocity.y *= -1;
+				}
+			}
+		}
 	}
 
 	glBindBuffer(GL_ARRAY_BUFFER, m_VBO);

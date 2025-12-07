@@ -66,8 +66,10 @@ int main(int argc, char* argv[]) {
 	double total_frame_time = 0;
 
 	Simulation sim;
-	Circle circle(0.1, Vector2(0,0), Vector2(-1.2, -1));
-	sim.addCircle(circle);
+	Circle circle1(0.1, Vector2(0.5,0.5), Vector2(-1, -1));
+	Circle circle2(0.1, Vector2(-0.5,-0.5), Vector2(1, 1));
+	sim.addCircle(circle1);
+	sim.addCircle(circle2);
 
 	while (!glfwWindowShouldClose(window)) {
 
@@ -92,11 +94,7 @@ int main(int argc, char* argv[]) {
 			average_frame_time = alpha * average_frame_time + (1 - alpha) * current_frame_time;
 			int fps = average_frame_time < target_frame_time ? target_fps : (1.0 / average_frame_time);
 
-#ifdef DEBUG_MODE
-			std::cout << "FT: " << std::round(average_frame_time * 1000) << "ms " << "(" << fps << "fps) \r";
-#else
-			std::cout << "FT: " << std::round(average_frame_time * 1000) << "ms " << "(" << fps << "fps) \r";
-#endif
+			std::cout << " FT: " << std::round(average_frame_time * 1000) << "ms " << "(" << fps << "fps) \r";
 			std::cout << std::flush;
 
 		}
