@@ -5,11 +5,6 @@
 
 const float PI = 3.14159f;
 
-Circle::Circle(GLfloat radius, Vector2 position, int grain) : 
-	r(radius), 
-	pos(position),
-	grain(grain) {}
-
 std::vector<Vertex> Circle::draw(RGBA color){
 	std::vector<Vertex> vertices(this->grain);
 	float angle = 2 * PI / (float) this->grain;
@@ -36,6 +31,7 @@ Simulation::Simulation(){
 	glEnableVertexAttribArray(0);
 	glVertexAttribPointer(1, 4, GL_UNSIGNED_BYTE, GL_TRUE, stride, (void*)offsetof(Vertex, color));
 	glEnableVertexAttribArray(1);
+	lastFrameTime = glfwGetTime();
 }
 
 void Simulation::addCircle(Circle circle) {
@@ -43,16 +39,26 @@ void Simulation::addCircle(Circle circle) {
 }
 
 void Simulation::step() {
+	double currentTime = glfwGetTime();
+	double timeDelta = currentTime - lastFrameTime;
+	lastFrameTime = currentTime;
+
 	int vertex_count = 0;
 	for (Circle& shape : m_shapes) {
 		vertex_count += shape.grain;
 	}
+
 	std::vector<Vertex> vertices;
 	vertices.reserve(vertex_count);
 	for (Circle& shape : m_shapes) {
 		std::vector<Vertex> shape_vertices = shape.draw(RGBA(255,255,255,255));
 		vertices.insert(vertices.begin(), shape_vertices.begin(), shape_vertices.end());
+		float dx = shape.velocity.x * timeDelta;
+		float dy = shape.velocity.y * timeDelta;
+		shape.pos.x += dx;
+		shape.pos.y += dy;
 	}
+
 	glBindBuffer(GL_ARRAY_BUFFER, m_VBO);
 	glBufferData(GL_ARRAY_BUFFER, vertex_count * sizeof(Vertex), vertices.data(), GL_DYNAMIC_DRAW);
 	glDrawArrays(GL_POINTS, 0, vertex_count);
