@@ -21,19 +21,12 @@ struct Vertex {
     Vertex() : pos(Vector2(0,0)), color(RGBA(0,0,0,0)) {}
 };
 
-class IShape {
-public:
-    virtual std::vector<Vertex> draw(RGBA color)=0;
-    virtual int vertexCount()=0;
-};
 
-class Circle : public IShape {
+class Circle {
 public:
     Circle(GLfloat radius, Vector2 position, int grain=1000);
-    std::vector<Vertex> draw(RGBA color) override;
-    int vertexCount() override;
+    std::vector<Vertex> draw(RGBA color);
 
-private:
     GLfloat r;
     Vector2 pos;
     int grain;
@@ -43,9 +36,9 @@ class Simulation {
 public:
     Simulation();
     void step();
-    void addShape(IShape* shape);
+    void addCircle(Circle circle);
 private:
-    std::vector<IShape*> m_shapes;
+    std::vector<Circle> m_shapes;
     std::vector<Vertex> m_vertices;
     GLuint m_VAO;
     GLuint m_VBO;

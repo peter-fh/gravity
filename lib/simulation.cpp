@@ -23,10 +23,6 @@ std::vector<Vertex> Circle::draw(RGBA color){
 	return vertices;
 }
 
-int Circle::vertexCount() {
-	return grain;
-}
-
 Simulation::Simulation(){
 
 	glGenVertexArrays(1, &m_VAO);
@@ -42,19 +38,19 @@ Simulation::Simulation(){
 	glEnableVertexAttribArray(1);
 }
 
-void Simulation::addShape(IShape* shape) {
-	m_shapes.push_back(shape);
+void Simulation::addCircle(Circle circle) {
+	m_shapes.push_back(circle);
 }
 
 void Simulation::step() {
 	int vertex_count = 0;
-	for (IShape* shape : m_shapes) {
-		vertex_count += shape->vertexCount();
+	for (Circle& shape : m_shapes) {
+		vertex_count += shape.grain;
 	}
 	std::vector<Vertex> vertices;
 	vertices.reserve(vertex_count);
-	for (IShape* shape : m_shapes) {
-		std::vector<Vertex> shape_vertices = shape->draw(RGBA(255,255,255,255));
+	for (Circle& shape : m_shapes) {
+		std::vector<Vertex> shape_vertices = shape.draw(RGBA(255,255,255,255));
 		vertices.insert(vertices.begin(), shape_vertices.begin(), shape_vertices.end());
 	}
 	glBindBuffer(GL_ARRAY_BUFFER, m_VBO);
