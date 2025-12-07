@@ -57,6 +57,23 @@ void Simulation::step() {
 		float dy = shape.velocity.y * timeDelta;
 		shape.pos.x += dx;
 		shape.pos.y += dy;
+		if (shape.pos.x + shape.r > 1 || shape.pos.x - shape.r < -1) {
+			shape.velocity.x *= -1;
+			if (dx > 0) {
+				shape.pos.x = 1-shape.r;
+			} else {
+				shape.pos.x = -1+shape.r;
+			}
+		}
+		if (shape.pos.y + shape.r > 1 || shape.pos.y - shape.r < -1) {
+			shape.velocity.y *= -1;
+			if (dy > 0) {
+				shape.pos.y = 1-shape.r;
+			} else {
+				shape.pos.y = -1+shape.r;
+			}
+		}
+
 	}
 
 	glBindBuffer(GL_ARRAY_BUFFER, m_VBO);

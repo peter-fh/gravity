@@ -66,7 +66,7 @@ int main(int argc, char* argv[]) {
 	double total_frame_time = 0;
 
 	Simulation sim;
-	Circle circle(0.1, Vector2(0,0), Vector2(0, -0.1));
+	Circle circle(0.1, Vector2(0,0), Vector2(-1.2, -1));
 	sim.addCircle(circle);
 
 	while (!glfwWindowShouldClose(window)) {
