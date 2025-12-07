@@ -28,8 +28,8 @@ void keyCallback(GLFWwindow* window, int key, int scancode, int action, int mods
 int main(int argc, char* argv[]) {
  
 
-	const int height = 784; // 784
-	const int width = 1024; // 1024
+	const int height = 800; // 784
+	const int width = 800; // 1024
 #ifdef DEBUG_MODE
 	const int grid_height = 49;
 	const int grid_width = 64;
@@ -66,7 +66,7 @@ int main(int argc, char* argv[]) {
 	double total_frame_time = 0;
 
 	Simulation sim;
-	Circle* circle = new Circle(0.5, Vector2(0,0));
+	Circle* circle = new Circle(0.1, Vector2(0,0));
 	sim.addShape(circle);
 
 	while (!glfwWindowShouldClose(window)) {
@@ -106,19 +106,6 @@ int main(int argc, char* argv[]) {
 		}
 		frames_passed++;
 
-		if (frames_passed == 460) {
-			double fps_450 = 450 / total_frame_time;
-			double average_frame_time_450 = total_frame_time / 450.0;
-			std::cout << std::flush;
-			std::cout << "First 450 frame statistics:   \n";
-			std::cout << "\t" << std::round(total_frame_time * 1000) << "ms total\n";
-			std::cout << "\t" << std::round(average_frame_time_450 * 10000) / 10 << "ms average frame time\n";
-			if (fps_450 > target_fps) {
-				std::cout << "\t" << std::round(fps_450) << " average fps (locked at " << target_fps << ")\n";
-			} else {
-				std::cout <<  "\t" <<std::round(fps_450) << " average fps\n";
-			}
-		}
 #ifdef DEBUG_MODE
 		while (!key_pressed) {
 			glfwWaitEvents();

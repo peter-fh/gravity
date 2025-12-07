@@ -29,7 +29,7 @@ public:
 
 class Circle : public IShape {
 public:
-    Circle(GLfloat radius, Vector2 position, int grain=100);
+    Circle(GLfloat radius, Vector2 position, int grain=1000);
     std::vector<Vertex> draw(RGBA color) override;
     int vertexCount() override;
 
