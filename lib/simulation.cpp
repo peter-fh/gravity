@@ -4,7 +4,7 @@
 #include <iostream>
 
 const float PI = 3.14159f;
-const float G = 0.1f;
+const float G = 0.01f;
 
 std::vector<Vertex> Circle::draw(RGBA color){
 	std::vector<Vertex> vertices(this->grain);
@@ -84,12 +84,13 @@ void Simulation::step() {
 				float y_dist = other_shape.pos.y - shape.pos.y;
 				float dist = sqrt(pow(x_dist, 2) + pow(y_dist, 2));
 				if (dist < shape.r + other_shape.r) {
+					Vector2 n(x_dist/dist, y_dist/dist);
+					Vector2 v = shape.velocity;
+					float dot_product = 2 * (n.x * v.x + n.y * v.y);
 					shape.pos.x -= dx;
 					shape.pos.y -= dy;
-					shape.velocity.x *= -1;
-					shape.velocity.y *= -1;
-					other_shape.velocity.x *= -1;
-					other_shape.velocity.y *= -1;
+					shape.velocity.x -= dot_product*n.x;
+					shape.velocity.y -= dot_product*n.y;
 				}
 
 				float gravity_force = G / pow(dist, 2.0);

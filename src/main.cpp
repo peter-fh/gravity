@@ -30,13 +30,8 @@ int main(int argc, char* argv[]) {
 
 	const int height = 800; // 784
 	const int width = 800; // 1024
-#ifdef DEBUG_MODE
-	const int grid_height = 49;
-	const int grid_width = 64;
-#else
 	const int grid_height = height;
 	const int grid_width = width;
-#endif
 	const double target_fps = 120;
 	const float point_size = float(width) / float(grid_width) * 2;
 
@@ -66,8 +61,16 @@ int main(int argc, char* argv[]) {
 	double total_frame_time = 0;
 
 	Simulation sim;
+	/*
 	Circle circle1(0.1, Vector2(0.5,0.5));
 	Circle circle2(0.1, Vector2(-0.5,-0.5));
+	*/
+	/*
+	Circle circle1(0.1, Vector2(0.5,0.5), Vector2(-1,-1));
+	Circle circle2(0.1, Vector2(-0.5,-0.5), Vector2(1,1));
+	*/
+	Circle circle1(0.1, Vector2(0.1,0.5), Vector2(0,-1));
+	Circle circle2(0.1, Vector2(-0.1,-0.5), Vector2(0,1));
 	sim.addCircle(circle1);
 	sim.addCircle(circle2);
 
