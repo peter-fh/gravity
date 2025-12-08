@@ -5,6 +5,7 @@
 
 const float PI = 3.14159f;
 const float G = 0.01f;
+const float COLLISION_DAMPING = 0.95f;
 
 std::vector<Vertex> Circle::draw(RGBA color){
 	std::vector<Vertex> vertices(this->grain);
@@ -86,7 +87,7 @@ void Simulation::step() {
 				if (dist < shape.r + other_shape.r) {
 					Vector2 n(x_dist/dist, y_dist/dist);
 					Vector2 v = shape.velocity;
-					float dot_product = 2 * (n.x * v.x + n.y * v.y);
+					float dot_product = COLLISION_DAMPING * 2 * (n.x * v.x + n.y * v.y);
 					shape.pos.x -= dx;
 					shape.pos.y -= dy;
 					shape.velocity.x -= dot_product*n.x;
