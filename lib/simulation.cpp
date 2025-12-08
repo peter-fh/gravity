@@ -4,9 +4,25 @@
 #include <iostream>
 
 const float PI = 3.14159f;
-const float G = 0.005f;
-const float COLLISION_DAMPING = 1.0f;
-const float COLLISION_OFFSET = 0.001f;
+const float G = 0.1f;
+const float COLLISION_DAMPING = 0.9f;
+const float COLLISION_OFFSET = 0.0001f;
+
+Circle::Circle(GLfloat radius, Vector2 position, int grain) :
+	r(radius), 
+	pos(position),
+	velocity(Vector2(0,0)),
+	grain(grain) {
+	mass = radius * radius * PI;
+};
+
+Circle::Circle(GLfloat radius, Vector2 position, Vector2 velocity, int grain) : 
+	r(radius),
+	pos(position),
+	velocity(velocity),
+	grain(grain) {
+	mass = radius * radius * PI;
+};
 
 std::vector<Vertex> Circle::draw(RGBA color){
 	std::vector<Vertex> vertices(this->grain);
@@ -126,11 +142,11 @@ void Simulation::step() {
 					shape.pos.y += dy * clip_percentage;
 				}
 
-				float gravity_force = G / pow(dist, 2.0);
+				float gravity_force = shape.mass * other_shape.mass * G / pow(dist, 2.0);
 				float gravity_force_x = gravity_force * x_dist / dist;
 				float gravity_force_y = gravity_force * y_dist / dist;
-				shape.velocity.x += gravity_force_x;
-				shape.velocity.y += gravity_force_y;
+				shape.velocity.x += gravity_force_x/shape.mass;
+				shape.velocity.y += gravity_force_y/shape.mass;
 			}
 
 		}

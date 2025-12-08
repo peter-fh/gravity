@@ -24,23 +24,16 @@ struct Vertex {
 
 class Circle {
 public:
-    Circle(GLfloat radius, Vector2 position, int grain=1000) :
-        r(radius), 
-        pos(position),
-        velocity(Vector2(0,0)),
-        grain(grain) {};
+    Circle(GLfloat radius, Vector2 position, int grain=1000);
 
-    Circle(GLfloat radius, Vector2 position, Vector2 velocity, int grain=1000) : 
-        r(radius),
-        pos(position),
-        velocity(velocity),
-        grain(grain) {};
+    Circle(GLfloat radius, Vector2 position, Vector2 velocity, int grain=1000);
 
     std::vector<Vertex> draw(RGBA color);
 
     GLfloat r;
     Vector2 pos;
     Vector2 velocity;
+    float mass;
     int grain;
 };
 

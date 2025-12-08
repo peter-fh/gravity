@@ -32,7 +32,7 @@ int main(int argc, char* argv[]) {
 	const int width = 800; // 1024
 	const int grid_height = height;
 	const int grid_width = width;
-	const double target_fps = 120;
+	const double target_fps = 60;
 	const float point_size = float(width) / float(grid_width) * 2;
 
 
@@ -69,10 +69,12 @@ int main(int argc, char* argv[]) {
 	Circle circle1(0.1, Vector2(0.5,0.5), Vector2(-1,-1));
 	Circle circle2(0.1, Vector2(-0.5,-0.5), Vector2(1,1));
 	*/
-	Circle circle1(0.1, Vector2(0.05,0.5), Vector2(0,-0.5));
-	Circle circle2(0.1, Vector2(-0.05,-0.5), Vector2(0,0.5));
+	Circle circle1(0.1, Vector2(0.05,0.5));
+	//Circle circle2(0.1, Vector2(-0.05,-0.5));
+	Circle circle3(0.001, Vector2(-0.5,-0.5), Vector2(0.5,0.5));
 	sim.addCircle(circle1);
-	sim.addCircle(circle2);
+	//sim.addCircle(circle2);
+	sim.addCircle(circle3);
 
 	while (!glfwWindowShouldClose(window)) {
 
