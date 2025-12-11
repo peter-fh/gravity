@@ -1,18 +1,13 @@
 #include "GLFW/glfw3.h"
 #include <vector>
+#include "vector2.h"
 
-
-struct Vector2{
-    GLfloat x, y;
-    Vector2(GLfloat x, GLfloat y) : x(x), y(y) {}
-};
 
 struct RGBA {
     GLubyte r,g,b,a;
     RGBA(GLubyte r, GLubyte g, GLubyte b, GLubyte a) 
     : r(r), g(g), b(b), a(a) {}
 };
-
 
 struct Vertex {
     Vector2 pos;

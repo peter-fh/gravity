@@ -61,20 +61,18 @@ int main(int argc, char* argv[]) {
 	double total_frame_time = 0;
 
 	Simulation sim;
+	sim.addCircle(Circle(0.1, Vector2(-0.5,0), Vector2(1, 0)));
+	sim.addCircle(Circle(0.1, Vector2(0.5,0), Vector2(-1, 0)));
 	/*
-	Circle circle1(0.1, Vector2(0.5,0.5));
-	Circle circle2(0.1, Vector2(-0.5,-0.5));
+	sim.addCircle(Circle(0.001, Vector2(-0.5,-0.5), Vector2(0.5,0.5)));
+	sim.addCircle(Circle(0.001, Vector2(0.5,0.5), Vector2(0.5,0.5)));
+	sim.addCircle(Circle(0.001, Vector2(-0.5,0.5), Vector2(0.5,0.5)));
+	sim.addCircle(Circle(0.001, Vector2(0.5,-0.5), Vector2(0.5,0.5)));
+	sim.addCircle(Circle(0.001, Vector2(0.55,-0.5), Vector2(0.5,0.5)));
+	sim.addCircle(Circle(0.001, Vector2(0.6,-0.5), Vector2(0.5,0.5)));
+	sim.addCircle(Circle(0.001, Vector2(0.65,-0.5), Vector2(0.5,0.5)));
+	sim.addCircle(Circle(0.001, Vector2(0.7,-0.5), Vector2(0.5,0.5)));
 	*/
-	/*
-	Circle circle1(0.1, Vector2(0.5,0.5), Vector2(-1,-1));
-	Circle circle2(0.1, Vector2(-0.5,-0.5), Vector2(1,1));
-	*/
-	Circle circle1(0.1, Vector2(0.05,0.5));
-	//Circle circle2(0.1, Vector2(-0.05,-0.5));
-	Circle circle3(0.001, Vector2(-0.5,-0.5), Vector2(0.5,0.5));
-	sim.addCircle(circle1);
-	//sim.addCircle(circle2);
-	sim.addCircle(circle3);
 
 	while (!glfwWindowShouldClose(window)) {
 

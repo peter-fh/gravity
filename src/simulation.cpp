@@ -6,7 +6,7 @@
 const float PI = 3.14159f;
 const float G = 0.1f;
 const float COLLISION_DAMPING = 0.9f;
-const float COLLISION_OFFSET = 0.0001f;
+const float COLLISION_OFFSET = 0.01f;
 
 Circle::Circle(GLfloat radius, Vector2 position, int grain) :
 	r(radius), 
@@ -61,22 +61,97 @@ float distance(Circle a, Circle b) {
 	return std::sqrt(pow(a.pos.x - b.pos.x, 2) + pow(a.pos.y - b.pos.y, 2));
 }
 
+float magnitude(Vector2 v) {
+	return std::sqrt(pow(v.x, 2) + pow(v.y, 2));
+}
+
 void Simulation::step() {
 	double currentTime = glfwGetTime();
 	double timeDelta = currentTime - lastFrameTime;
 	lastFrameTime = currentTime;
 
+	// Count vertices
 	int vertex_count = 0;
 	for (Circle& shape : m_shapes) {
 		vertex_count += shape.grain;
 	}
 
+	// Compute forces
+	for (Circle& shape : m_shapes) {
+		for (Circle& other_shape : m_shapes) {
+			if (&shape != &other_shape) {
+				float x_dist = other_shape.pos.x - shape.pos.x;
+				float y_dist = other_shape.pos.y - shape.pos.y;
+				float dist = sqrt(pow(x_dist, 2) + pow(y_dist, 2));
+				float offset = dist - COLLISION_OFFSET - (shape.r + other_shape.r);
+				float gravity_force = shape.mass * other_shape.mass * G / pow(dist, 2.0);
+				float gravity_force_x = gravity_force * x_dist / dist;
+				float gravity_force_y = gravity_force * y_dist / dist;
+				shape.velocity.x += gravity_force_x/shape.mass;
+				shape.velocity.y += gravity_force_y/shape.mass;
+			}
+		}
+	}
+
+	// Integrate positions
+	for (Circle& shape : m_shapes) {
+		float dx = shape.velocity.x * timeDelta;
+		float dy = shape.velocity.y * timeDelta;
+		shape.pos.x += dx;
+		shape.pos.y += dy;
+	}
+
+	// Handle collisions
+	for (Circle& shape : m_shapes) {
+		if (shape.pos.x + shape.r > 1) {
+			shape.pos.x = 1 - shape.r;
+			shape.velocity.x *= -1;
+		}
+		if (shape.pos.x - shape.r < -1) {
+			shape.pos.x = -1 + shape.r;
+			shape.velocity.x *= -1;
+		}
+		if (shape.pos.y + shape.r > 1) {
+			shape.pos.y = 1 - shape.r;
+			shape.velocity.y *= -1;
+		}
+		if (shape.pos.y - shape.r < -1) {
+			shape.pos.y = -1 + shape.r;
+			shape.velocity.y *= -1;
+		}
+		for (Circle& other_shape : m_shapes) {
+			if (&shape != &other_shape) {
+				float x_dist = other_shape.pos.x - shape.pos.x;
+				float y_dist = other_shape.pos.y - shape.pos.y;
+				float dist = sqrt(pow(x_dist, 2) + pow(y_dist, 2));
+				if (dist < shape.r + other_shape.r) {
+					// Position
+					Vector2 u(other_shape.pos.x - shape.pos.x, other_shape.pos.y - shape.pos.y);
+					float k = (shape.r + other_shape.r) / magnitude(u);
+					Vector2 v(k*u.x, k*u.y);
+					Vector2 displacement(v.x-u.x, v.y-u.y);
+					float displacement_multiplier = shape.mass / (shape.mass * other_shape.mass);
+					shape.pos.x += displacement_multiplier * displacement.x;
+					shape.pos.y += displacement_multiplier * displacement.y;
+
+					// Velocity
+					Vector2 n(x_dist/dist, y_dist/dist);
+					Vector2 velocity = shape.velocity;
+					float dot_product = COLLISION_DAMPING * 2 * (n.x * v.x + n.y * v.y);
+					shape.velocity.x -= dot_product*n.x;
+					shape.velocity.y -= dot_product*n.y;
+				}
+			}
+		}
+	}
+
+	// Generate vertices
 	std::vector<Vertex> vertices;
 	vertices.reserve(vertex_count);
-	for (int i=0; i < m_shapes.size(); i++) {
-		Circle& shape = m_shapes[i];
+	for (Circle& shape : m_shapes) {
 		std::vector<Vertex> shape_vertices = shape.draw(RGBA(255,255,255,255));
 		vertices.insert(vertices.begin(), shape_vertices.begin(), shape_vertices.end());
+		/*
 		float dx = shape.velocity.x * timeDelta;
 		float dy = shape.velocity.y * timeDelta;
 		float x = shape.pos.x + dx;
@@ -106,12 +181,17 @@ void Simulation::step() {
 
 		for (Circle& other_shape : m_shapes)  {
 			if (&shape != &other_shape) {
+				float x_dist = other_shape.pos.x - x;
+				float y_dist = other_shape.pos.y - y;
+				float dist = sqrt(pow(x_dist, 2) + pow(y_dist, 2));
+				float offset = dist - COLLISION_OFFSET - (shape.r + other_shape.r);
+
 
 				float x_start_dist = other_shape.pos.x - shape.pos.x;
 				float y_start_dist = other_shape.pos.y - shape.pos.y;
 				float start_dist = sqrt(pow(x_start_dist, 2.0) + pow(y_start_dist, 2.0));
-				float start_offset = start_dist - (shape.r + other_shape.r);
-				if (start_offset < 0) {
+				float start_offset = start_dist -COLLISION_OFFSET - (shape.r + other_shape.r);
+				if (start_offset < 0 && shape.mass < other_shape.mass) {
 					x_collision = true;
 					y_collision = true;
 					Vector2 n(x_start_dist/start_dist, y_start_dist/start_dist);
@@ -119,10 +199,6 @@ void Simulation::step() {
 					shape.pos.y += n.y * start_offset;
 				}
 
-				float x_dist = other_shape.pos.x - x;
-				float y_dist = other_shape.pos.y - y;
-				float dist = sqrt(pow(x_dist, 2) + pow(y_dist, 2));
-				float offset = dist + COLLISION_OFFSET - (shape.r + other_shape.r);
 				if (offset < 0) {
 					x_collision = true;
 					y_collision = true;
@@ -132,8 +208,8 @@ void Simulation::step() {
 					Vector2 n(x_dist/dist, y_dist/dist);
 					Vector2 v = shape.velocity;
 					float dot_product = COLLISION_DAMPING * 2 * (n.x * v.x + n.y * v.y);
-					shape.pos.x += dx * non_clip_percentage;
-					shape.pos.y += dy * non_clip_percentage;
+					//shape.pos.x += dx * non_clip_percentage;
+					//shape.pos.y += dy * non_clip_percentage;
 					shape.velocity.x -= dot_product*n.x;
 					shape.velocity.y -= dot_product*n.y;
 					dx = shape.velocity.x * timeDelta;
@@ -142,11 +218,6 @@ void Simulation::step() {
 					shape.pos.y += dy * clip_percentage;
 				}
 
-				float gravity_force = shape.mass * other_shape.mass * G / pow(dist, 2.0);
-				float gravity_force_x = gravity_force * x_dist / dist;
-				float gravity_force_y = gravity_force * y_dist / dist;
-				shape.velocity.x += gravity_force_x/shape.mass;
-				shape.velocity.y += gravity_force_y/shape.mass;
 			}
 
 		}
@@ -156,6 +227,7 @@ void Simulation::step() {
 		if (!y_collision) {
 			shape.pos.y += dy;
 		}
+		*/
 	}
 
 	glBindBuffer(GL_ARRAY_BUFFER, m_VBO);

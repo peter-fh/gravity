@@ -6,7 +6,7 @@ project(Gravity VERSION 1.0)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 
-file(GLOB LIB_SOURCES "lib/*.cpp")
+file(GLOB LIB_SOURCES "src/*.cpp")
 
 add_executable(GameOfLife src/main.cpp ${LIB_SOURCES})
 set_target_properties(GameOfLife PROPERTIES OUTPUT_NAME "Game Of Life")
