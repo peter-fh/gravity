@@ -131,15 +131,18 @@ void Simulation::step() {
 					Vector2 v(k*u.x, k*u.y);
 					Vector2 displacement(v.x-u.x, v.y-u.y);
 					float displacement_multiplier = shape.mass / (shape.mass + other_shape.mass);
-					other_shape.pos.x += displacement_multiplier * displacement.x;
-					other_shape.pos.y += displacement_multiplier * displacement.y;
+					other_shape.pos.x += displacement_multiplier * displacement.x * COLLISION_DAMPING;
+					other_shape.pos.y += displacement_multiplier * displacement.y * COLLISION_DAMPING;
 
-					// Velocity
+
+					float C = 1;
+					float friction = 0.5;
+
+					// https://en.wikipedia.org/wiki/Inelastic_collision
 					Vector2 n(x_dist/dist, y_dist/dist);
-					Vector2 velocity = shape.velocity;
-					float dot_product = 2 * (n.x * velocity.x + n.y * velocity.y);
-					shape.velocity.x -= dot_product*n.x;
-					shape.velocity.y -= dot_product*n.y;
+					k = ((shape.mass * other_shape.mass) / (shape.mass + other_shape.mass)) * (1 + C);
+					float J = k*(other_shape.velocity - shape.velocity) * n;
+					shape.velocity += J/shape.mass * n;
 				}
 			}
 		}
