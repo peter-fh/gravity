@@ -5,7 +5,7 @@
 
 const float PI = 3.14159f;
 const float G = 0.1f;
-const float COLLISION_DAMPING = 0.99f;
+const float COLLISION_DAMPING = 0.9f;
 const float COLLISION_OFFSET = 0.01f;
 
 Circle::Circle(GLfloat radius, Vector2 position, int grain) :
@@ -131,8 +131,8 @@ void Simulation::step() {
 					Vector2 v(k*u.x, k*u.y);
 					Vector2 displacement(v.x-u.x, v.y-u.y);
 					float displacement_multiplier = shape.mass / (shape.mass + other_shape.mass);
-					shape.pos.x -= displacement_multiplier * displacement.x;
-					shape.pos.y -= displacement_multiplier * displacement.y;
+					other_shape.pos.x += displacement_multiplier * displacement.x;
+					other_shape.pos.y += displacement_multiplier * displacement.y;
 
 					// Velocity
 					Vector2 n(x_dist/dist, y_dist/dist);
