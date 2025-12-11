@@ -72,8 +72,8 @@ int main(int argc, char* argv[]) {
 	sim.addCircle(Circle(0.1, Vector2(0,0)));
 	//sim.addCircle(Circle(0.1, Vector2(0.5,0), Vector2(-1, 0)));
 	sim.addCircle(Circle(0.001, Vector2(-0.5,-0.5), Vector2(0.5,0.5)));
+	sim.addCircle(Circle(0.001, Vector2(-0.5,0.5), Vector2(0.5,-0.5)));
 	sim.addCircle(Circle(0.001, Vector2(0.5,0.5), Vector2(0.5,0.5)));
-	sim.addCircle(Circle(0.001, Vector2(-0.5,0.5), Vector2(0.5,0.5)));
 	sim.addCircle(Circle(0.001, Vector2(0.5,-0.5), Vector2(0.5,0.5)));
 	sim.addCircle(Circle(0.001, Vector2(0.55,-0.5), Vector2(0.5,0.5)));
 	sim.addCircle(Circle(0.001, Vector2(0.6,-0.5), Vector2(0.5,0.5)));

@@ -30,6 +30,7 @@ public:
     Vector2 velocity;
     float mass;
     int grain;
+    bool stationary;
 };
 
 class Simulation {

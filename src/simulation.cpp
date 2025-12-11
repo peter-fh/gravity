@@ -4,8 +4,8 @@
 #include <iostream>
 
 const float PI = 3.14159f;
-const float G = 0.1f;
-const float COLLISION_DAMPING = 0.9f;
+const float G = 0.5f;
+const float COLLISION_DAMPING = 0.5f;
 const float COLLISION_OFFSET = 0.01f;
 
 Circle::Circle(GLfloat radius, Vector2 position, int grain) :
@@ -14,6 +14,7 @@ Circle::Circle(GLfloat radius, Vector2 position, int grain) :
 	velocity(Vector2(0,0)),
 	grain(grain) {
 	mass = radius * radius * PI;
+	stationary = false;
 };
 
 Circle::Circle(GLfloat radius, Vector2 position, Vector2 velocity, int grain) : 
@@ -22,6 +23,7 @@ Circle::Circle(GLfloat radius, Vector2 position, Vector2 velocity, int grain) :
 	velocity(velocity),
 	grain(grain) {
 	mass = radius * radius * PI;
+	stationary = false;
 };
 
 std::vector<Vertex> Circle::draw(RGBA color){
@@ -78,18 +80,22 @@ void Simulation::step() {
 
 	// Compute forces
 	for (Circle& shape : m_shapes) {
-		for (Circle& other_shape : m_shapes) {
-			if (&shape != &other_shape) {
-				float x_dist = other_shape.pos.x - shape.pos.x;
-				float y_dist = other_shape.pos.y - shape.pos.y;
-				float dist = sqrt(pow(x_dist, 2) + pow(y_dist, 2));
-				float offset = dist - COLLISION_OFFSET - (shape.r + other_shape.r);
-				float gravity_force = shape.mass * other_shape.mass * G / pow(dist, 2.0);
-				float gravity_force_x = gravity_force * x_dist / dist;
-				float gravity_force_y = gravity_force * y_dist / dist;
-				shape.velocity.x += gravity_force_x/shape.mass;
-				shape.velocity.y += gravity_force_y/shape.mass;
+		if (!shape.stationary) {
+			for (Circle& other_shape : m_shapes) {
+				if (&shape != &other_shape) {
+					float x_dist = other_shape.pos.x - shape.pos.x;
+					float y_dist = other_shape.pos.y - shape.pos.y;
+					float dist = sqrt(pow(x_dist, 2) + pow(y_dist, 2));
+					float offset = dist - COLLISION_OFFSET - (shape.r + other_shape.r);
+					float gravity_force = shape.mass * other_shape.mass * G / pow(dist, 2.0);
+					float gravity_force_x = gravity_force * x_dist / dist;
+					float gravity_force_y = gravity_force * y_dist / dist;
+					shape.velocity.x += gravity_force_x/shape.mass;
+					shape.velocity.y += gravity_force_y/shape.mass;
+				}
 			}
+		} else {
+			shape.stationary = false;
 		}
 	}
 
@@ -124,25 +130,24 @@ void Simulation::step() {
 				float x_dist = other_shape.pos.x - shape.pos.x;
 				float y_dist = other_shape.pos.y - shape.pos.y;
 				float dist = sqrt(pow(x_dist, 2) + pow(y_dist, 2));
-				if (dist < shape.r + other_shape.r) {
+				if (dist < shape.r + other_shape.r + COLLISION_OFFSET) {
 					// Position
 					Vector2 u(other_shape.pos.x - shape.pos.x, other_shape.pos.y - shape.pos.y);
 					float k = (shape.r + other_shape.r) / magnitude(u);
 					Vector2 v(k*u.x, k*u.y);
 					Vector2 displacement(v.x-u.x, v.y-u.y);
 					float displacement_multiplier = shape.mass / (shape.mass + other_shape.mass);
-					other_shape.pos.x += displacement_multiplier * displacement.x * COLLISION_DAMPING;
-					other_shape.pos.y += displacement_multiplier * displacement.y * COLLISION_DAMPING;
+					other_shape.pos.x += displacement_multiplier * displacement.x;
+					other_shape.pos.y += displacement_multiplier * displacement.y;
 
 
-					float C = 1;
-					float friction = 0.5;
-
+					float C = 0.9;
 					// https://en.wikipedia.org/wiki/Inelastic_collision
 					Vector2 n(x_dist/dist, y_dist/dist);
 					k = ((shape.mass * other_shape.mass) / (shape.mass + other_shape.mass)) * (1 + C);
 					float J = k*(other_shape.velocity - shape.velocity) * n;
 					shape.velocity += J/shape.mass * n;
+					shape.stationary = true;
 				}
 			}
 		}
